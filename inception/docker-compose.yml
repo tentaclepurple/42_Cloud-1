@@ -1,0 +1,58 @@
+services:
+  nginx:
+    build: ./services/nginx
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - inception_network
+    depends_on:
+      - wordpress
+    restart: always
+
+  wordpress:
+    build: ./services/wordpress
+    volumes:
+      - wordpress:/var/www/html
+    environment:
+      - WORDPRESS_DB_HOST=mysql
+      - WORDPRESS_DB_USER=${MYSQL_USER}
+      - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
+      - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
+    networks:
+      - inception_network
+    depends_on:
+      - mysql
+    restart: always
+
+  mysql:
+    build: ./services/mysql
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    networks:
+      - inception_network
+    restart: always
+
+volumes:
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes/wordpress
+      o: bind
+  mysql:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/volumes/mysql
+      o: bind
+
+networks:
+  inception_network:
+    driver: bridge

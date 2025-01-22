@@ -1,0 +1,7 @@
+---
+- name: Config Docker in server
+  hosts: wordpress_servers
+  become: true
+
+  roles:
+    - ../../ansible/roles/docker
