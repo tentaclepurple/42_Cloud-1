@@ -1,0 +1,21 @@
+---
+- name: Get server system information
+  hosts: wordpress_servers
+  become: true  # This allows run commands with sudo
+
+  tasks:
+    - name: Get server information
+      debug:
+        msg: 
+          - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "Total RAM: {{ ansible_memtotal_mb }}MB"
+          - "CPU: {{ ansible_processor_count }} core(s)"
+          - "Server IP: {{ ansible_default_ipv4.address }}"
+
+    - name: Get disk space
+      command: df -h /
+      register: disk_space
+
+    - name: Show disk space
+      debug:
+        var: disk_space.stdout_lines
