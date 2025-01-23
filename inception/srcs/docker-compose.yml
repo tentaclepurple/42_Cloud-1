@@ -3,57 +3,70 @@
 version: '3'
 
 services:
-        mariadb:
-                build: requirements/mariadb
-                image: mariadb
-                container_name: mariadb
-                env_file: .env
-                volumes:
-                        - mariadb:/var/lib/mysql
-                restart: always
-                networks:
-                        - inception
+    mariadb:
+        build: requirements/mariadb
+        image: mariadb
+        container_name: mariadb
+        env_file: .env
+        volumes:
+            - mariadb:/var/lib/mysql
+        restart: always
+        networks:
+            - inception
 
-        wordpress:
-                build: requirements/wordpress
-                image: wordpress
-                depends_on:
-                        - mariadb
-                container_name: wordpress
-                env_file: .env
-                volumes:
-                        - wordpress:/var/www/wordpress
-                restart: always
-                networks:
-                        - inception
+    wordpress:
+        build: requirements/wordpress
+        image: wordpress
+        depends_on:
+            - mariadb
+        container_name: wordpress
+        env_file: .env
+        volumes:
+            - wordpress:/var/www/wordpress
+        restart: always
+        networks:
+            - inception
 
-        nginx:
-                build: requirements/nginx
-                image: nginx
-                depends_on:
-                        - wordpress
-                container_name: nginx
-                env_file: .env
-                volumes:
-                        - wordpress:/var/www/wordpress
-                ports:
-                        - "443:443"
-                restart: always
-                networks:
-                        - inception
+    nginx:
+        build: requirements/nginx
+        image: nginx
+        depends_on:
+            - wordpress
+        container_name: nginx
+        env_file: .env
+        volumes:
+            - wordpress:/var/www/wordpress
+        ports:
+            - "443:443"
+        restart: always
+        networks:
+            - inception
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        environment:
+            - PMA_HOST=mariadb
+            - PMA_PORT=3306
+        ports:
+              - "8080:80"
+        networks:
+            - inception
+        restart: always
+        depends_on:
+            - mariadb
 
 networks:
-        inception:
-                driver: bridge
+    inception:
+        driver: bridge
 
 volumes:
-        mariadb:
-                driver_opts:
-                        type: none
-                        device: ${HOME}/data/mysql
-                        o: bind
-        wordpress:
-                driver_opts:
-                        type: none
-                        device: ${HOME}/data/html
-                        o: bind
+    mariadb:
+        driver_opts:
+            type: none
+            device: ${HOME}/data/mysql
+            o: bind
+    wordpress:
+        driver_opts:
+            type: none
+            device: ${HOME}/data/html
+            o: bind
