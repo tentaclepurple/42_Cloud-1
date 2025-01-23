@@ -1,10 +1,12 @@
 #!/bin/bash
 
 # Esperar por MySQL usando /dev/tcp
-until ping -c 1 mysql > /dev/null 2>&1; do
-    echo "Waiting for MySQL..."
-    sleep 1
-done
+#until ping -c 1 mysql > /dev/null 2>&1; do
+#    echo "Waiting for MySQL..."
+#    sleep 1
+#done
+
+sleep 5
 
 # Download WordPress if not exists
 if [ ! -f "wp-config.php" ]; then
