@@ -50,10 +50,10 @@ volumes:
         mariadb:
                 driver_opts:
                         type: none
-                        device: /home/wopr/data/mysql
+                        device: ${HOME}/data/mysql
                         o: bind
         wordpress:
                 driver_opts:
                         type: none
-                        device: /home/wopr/data/html
+                        device: ${HOME}/data/html
                         o: bind

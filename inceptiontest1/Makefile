@@ -11,16 +11,16 @@ build:
 	$(DOCC) -f ./srcs/$(DOCC).yml build
 
 rm_vol:
-	sudo chown -R $(USER) $(HOME)/data
-	sudo chmod -R 777 $(HOME)/data
+	chown -R $(USER) $(HOME)/data
+	chmod -R 777 $(HOME)/data
 	rm -rf $(HOME)/data
 
 vol:
 	mkdir -p $(HOME)/data/mysql
 	mkdir -p $(HOME)/data/html
-	sudo chown -R $(USER) $(HOME)/data
-	sudo chmod -R 777 $(HOME)/data/mysql
-	sudo chmod -R 777 $(HOME)/data/html
+	chown -R $(USER) $(HOME)/data
+	chmod -R 777 $(HOME)/data/mysql
+	chmod -R 777 $(HOME)/data/html
 
 up:
 	$(DOCC) -f ./srcs/$(DOCC).yml up -d
