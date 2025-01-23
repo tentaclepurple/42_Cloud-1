@@ -34,11 +34,11 @@ remove:
 	docker volume prune -f
 	docker volume rm srcs_wordpress
 	docker volume rm srcs_mariadb
-	docker container prune -f
-
-re: remove delete build up
+	yes | docker container prune -f
 
 clean: down rm_vol remove delete
+
+re: clean build up
 
 list:
 	docker ps -a
@@ -48,7 +48,7 @@ delete:
 	cd srcs && docker-compose stop nginx
 	cd srcs && docker-compose stop wordpress
 	cd srcs && docker-compose stop mariadb
-	docker system prune -a
+	yes | docker system prune -a
 
 logs:
 	cd srcs && docker-compose logs mariadb wordpress nginx
