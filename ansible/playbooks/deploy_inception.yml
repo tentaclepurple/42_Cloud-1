@@ -3,34 +3,36 @@
   hosts: wordpress_servers
   become: true 
 
+  vars:
+    data_path: "/home/{{ ansible_user }}/data"
+    project_path: "/home/{{ ansible_user }}/inception"
+
   tasks:
-    - name: Create volume directories
+    - name: Create data directories
       file:
-        path: "/home/{{ ansible_user }}/inception/volumes/{{ item }}"
+        path: "{{ data_path }}/{{ item }}"
         state: directory
-        mode: '0755'
+        mode: '0777'
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
       with_items:
-        - wordpress
         - mysql
+        - html
 
-    - name: Deploy Inception files
-      become: false
-      block:
-        - name: Create project directories
-          file:
-            path: "/home/{{ ansible_user }}/inception/services/{{ item }}"
-            state: directory
-            mode: '0755'
-          with_items:
-            - nginx
-            - wordpress
-            - mysql
-
-    - name: Copy project files
+    - name: Deploy project files
       copy:
         src: "../../inception/"
-        dest: "/home/{{ ansible_user }}/inception/"
+        dest: "{{ project_path }}"
         mode: preserve
+      become: false
 
+    - name: Fix permissions for Docker sock
+      file:
+        path: /var/run/docker.sock
+        mode: '0666'
+
+    - name: Run make
+      command: make
+      args:
+        chdir: "{{ project_path }}"
+      become: false
