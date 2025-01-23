@@ -1,0 +1,79 @@
+---
+- name: Deploy WordPress Infrastructure
+  hosts: wordpress_servers
+  become: true
+
+  vars:
+    data_path: "/home/{{ ansible_user }}/data"
+    project_path: "/home/{{ ansible_user }}/inception"
+
+  tasks:
+    # System Info
+    - name: Get System Information
+      debug:
+        msg: 
+          - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "RAM: {{ ansible_memtotal_mb }}MB"
+          - "CPU: {{ ansible_processor_count }} cores"
+
+    # Docker Setup
+    - name: Install Docker Dependencies
+      apt:
+        name: 
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - software-properties-common
+        state: present
+        update_cache: yes
+
+    - name: Install Docker
+      shell: |
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sh get-docker.sh
+      args:
+        creates: /usr/bin/docker
+
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Enable Docker service
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    # Project Deployment
+    - name: Create data directories
+      file:
+        path: "{{ data_path }}/{{ item }}"
+        state: directory
+        mode: '0777'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      with_items:
+        - mysql
+        - html
+
+    - name: Copy project files
+      copy:
+        src: "../inception/"
+        dest: "{{ project_path }}"
+        mode: preserve
+      become: false
+
+    - name: Deploy containers
+      command: make
+      args:
+        chdir: "{{ project_path }}"
+      become: false

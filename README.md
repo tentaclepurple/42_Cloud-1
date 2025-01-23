@@ -13,11 +13,14 @@
 ### Verify availability
 ansible -i ansible/inventory/hosts servers -m ping
 
-# Get vps info
+### Get vps info
 ansible-playbook -i ansible/inventory/hosts ansible/playbooks/info.yml
 
-# Install Docker
+### Install Docker
 ansible-playbook -i ansible/inventory/hosts ansible/playbooks/setup_docker.yml
 
-# Deploy Inception
+### Deploy Inception
 ansible-playbook -i ansible/inventory/hosts ansible/playbooks/deploy_inception.yml
+
+### Total Deploy
+ansible-playbook -i ansible/inventory/hosts ansible/playbooks/deploy.yml
