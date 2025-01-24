@@ -15,6 +15,30 @@
           - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
           - "RAM: {{ ansible_memtotal_mb }}MB"
           - "CPU: {{ ansible_processor_count }} cores"
+    
+    - name: Install and configure UFW
+      block:
+        - name: Install UFW
+          apt:
+            name: ufw
+            state: present
+
+        - name: Allow SSH
+          ufw:
+            rule: allow
+            port: 22
+            proto: tcp
+
+        - name: Allow HTTPS
+          ufw:
+            rule: allow
+            port: 443
+            proto: tcp
+
+        - name: Enable UFW
+          ufw:
+            state: enabled
+            policy: deny
 
     # Docker Setup
     - name: Install Docker Dependencies
@@ -67,7 +91,7 @@
 
     - name: Copy project files
       copy:
-        src: "../inception/"
+        src: "../../inception/"
         dest: "{{ project_path }}"
         mode: preserve
       become: false

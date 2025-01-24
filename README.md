@@ -23,4 +23,4 @@ ansible-playbook -i ansible/inventory/hosts ansible/playbooks/setup_docker.yml
 ansible-playbook -i ansible/inventory/hosts ansible/playbooks/deploy_inception.yml
 
 ### Total Deploy
-ansible-playbook -i ansible/inventory/hosts ansible/playbooks/deploy.yml
+ansible-playbook -i ansible/inventory/hosts ansible/playbooks/total_deploy.yml
